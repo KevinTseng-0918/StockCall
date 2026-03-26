@@ -18,6 +18,16 @@ interface Props {
   onSubmit: (name: string, unit?: string) => void;
 }
 
+// ─── Design Tokens ───────────────────────────────────────────────────────────
+const BG = '#FFF8F0';
+const SURFACE = '#FFFFFF';
+const SURFACE2 = '#FFF3E8';
+const SURFACE3 = '#FFE8D0';
+const TEXT1 = '#1A0A02';
+const TEXT2 = '#9B6B44';
+const ACCENT = '#D94F1E';
+const BORDER = '#F0D0B8';
+
 const EditModal: React.FC<Props> = ({visible, mode, onClose, onSubmit}) => {
   const [name, setName] = useState('');
   const [selectedUnit, setSelectedUnit] = useState('份');
@@ -25,12 +35,7 @@ const EditModal: React.FC<Props> = ({visible, mode, onClose, onSubmit}) => {
   const handleSubmit = () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-
-    if (mode === 'category') {
-      onSubmit(trimmed);
-    } else {
-      onSubmit(trimmed, selectedUnit);
-    }
+    onSubmit(trimmed, mode === 'item' ? selectedUnit : undefined);
     setName('');
     setSelectedUnit('份');
   };
@@ -45,87 +50,109 @@ const EditModal: React.FC<Props> = ({visible, mode, onClose, onSubmit}) => {
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={handleClose}>
-      <TouchableOpacity
+      <KeyboardAvoidingView
         style={styles.overlay}
-        activeOpacity={1}
-        onPress={handleClose}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <TouchableOpacity activeOpacity={1}>
-            <View style={styles.container}>
-              <Text style={styles.title}>
-                {mode === 'category' ? '新增類別' : '新增品項'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={handleClose}
+        />
+        <View style={styles.sheet}>
+          {/* Handle */}
+          <View style={styles.handle} />
+
+          {/* Header row */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleClose} activeOpacity={0.7}>
+              <Text style={styles.cancelText}>取消</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>
+              {mode === 'category' ? '新增類別' : '新增品項'}
+            </Text>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={!name.trim()}
+              activeOpacity={0.7}>
+              <Text
+                style={[
+                  styles.confirmText,
+                  !name.trim() && styles.confirmTextDisabled,
+                ]}>
+                新增
               </Text>
+            </TouchableOpacity>
+          </View>
 
-              <TextInput
-                style={styles.input}
-                placeholder={
-                  mode === 'category' ? '輸入類別名稱' : '輸入品項名稱'
-                }
-                placeholderTextColor="#BFBFBF"
-                value={name}
-                onChangeText={setName}
-                autoFocus
-                returnKeyType="done"
-                onSubmitEditing={handleSubmit}
-              />
+          {/* Divider */}
+          <View style={styles.divider} />
 
-              {mode === 'item' && (
-                <View style={styles.unitSection}>
-                  <Text style={styles.unitLabel}>選擇單位</Text>
-                  <View style={styles.unitGrid}>
-                    {UNIT_OPTIONS.map(unit => (
-                      <TouchableOpacity
-                        key={unit}
+          {/* Body */}
+          <View style={styles.body}>
+            {/* Label */}
+            <Text style={styles.inputLabel}>
+              {mode === 'category' ? '類別名稱' : '品項名稱'}
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder={mode === 'category' ? '輸入類別名稱' : '輸入品項名稱'}
+              placeholderTextColor={TEXT2}
+              value={name}
+              onChangeText={setName}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              selectionColor={ACCENT}
+            />
+
+            {mode === 'item' && (
+              <View style={styles.unitSection}>
+                <Text style={styles.unitLabel}>單位</Text>
+                <View style={styles.unitGrid}>
+                  {UNIT_OPTIONS.map(unit => (
+                    <TouchableOpacity
+                      key={unit}
+                      style={[
+                        styles.unitChip,
+                        selectedUnit === unit && styles.unitChipActive,
+                      ]}
+                      onPress={() => setSelectedUnit(unit)}
+                      activeOpacity={0.7}>
+                      <Text
                         style={[
-                          styles.unitChip,
-                          selectedUnit === unit && styles.unitChipActive,
-                        ]}
-                        onPress={() => setSelectedUnit(unit)}
-                        activeOpacity={0.6}>
-                        <Text
-                          style={[
-                            styles.unitChipText,
-                            selectedUnit === unit && styles.unitChipTextActive,
-                          ]}>
-                          {unit}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                          styles.unitChipText,
+                          selectedUnit === unit && styles.unitChipTextActive,
+                        ]}>
+                        {unit}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              )}
-
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.cancelBtn}
-                  onPress={handleClose}
-                  activeOpacity={0.6}>
-                  <Text style={styles.cancelBtnText}>取消</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.confirmBtn,
-                    !name.trim() && styles.confirmBtnDisabled,
-                  ]}
-                  onPress={handleSubmit}
-                  activeOpacity={0.7}
-                  disabled={!name.trim()}>
-                  <Text
-                    style={[
-                      styles.confirmBtnText,
-                      !name.trim() && styles.confirmBtnTextDisabled,
-                    ]}>
-                    新增
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </View>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </TouchableOpacity>
+            )}
+
+            {/* Confirm button */}
+            <TouchableOpacity
+              style={[
+                styles.submitBtn,
+                !name.trim() && styles.submitBtnDisabled,
+              ]}
+              onPress={handleSubmit}
+              disabled={!name.trim()}
+              activeOpacity={0.8}>
+              <Text
+                style={[
+                  styles.submitBtnText,
+                  !name.trim() && styles.submitBtnTextDisabled,
+                ]}>
+                確認新增
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -133,42 +160,98 @@ const EditModal: React.FC<Props> = ({visible, mode, onClose, onSubmit}) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
-  container: {
-    width: 320,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.65)',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2D2D2D',
-    textAlign: 'center',
-    marginBottom: 20,
+  sheet: {
+    backgroundColor: SURFACE,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: BORDER,
+    paddingBottom: Platform.OS === 'ios' ? 36 : 24,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E8E4E0',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#2D2D2D',
-    backgroundColor: '#FAF8F5',
+  handle: {
+    width: 40,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: BORDER,
+    alignSelf: 'center',
+    marginTop: 12,
+    marginBottom: 4,
   },
 
-  // Unit Selection
+  // Header row
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: TEXT1,
+    letterSpacing: 0.5,
+  },
+  cancelText: {
+    fontSize: 14,
+    color: TEXT2,
+    fontWeight: '400',
+  },
+  confirmText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: ACCENT,
+  },
+  confirmTextDisabled: {
+    color: TEXT2,
+    opacity: 0.5,
+  },
+
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: BORDER,
+    marginHorizontal: 0,
+  },
+
+  // Body
+  body: {
+    padding: 20,
+  },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: TEXT2,
+    letterSpacing: 1.5,
+    marginBottom: 8,
+  },
+  input: {
+    fontSize: 16,
+    color: TEXT1,
+    backgroundColor: SURFACE2,
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+
+  // Unit section
   unitSection: {
-    marginTop: 16,
+    marginTop: 22,
   },
   unitLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#8C8C8C',
+    fontSize: 11,
+    fontWeight: '600',
+    color: TEXT2,
+    letterSpacing: 1.5,
     marginBottom: 10,
   },
   unitGrid: {
@@ -178,59 +261,52 @@ const styles = StyleSheet.create({
   },
   unitChip: {
     paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 16,
-    backgroundColor: '#F5F3F0',
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: SURFACE2,
+    borderWidth: 1,
+    borderColor: BORDER,
   },
   unitChipActive: {
-    backgroundColor: '#C53D2D',
+    backgroundColor: 'rgba(217,79,30,0.12)',
+    borderColor: ACCENT,
   },
   unitChipText: {
     fontSize: 13,
-    color: '#2D2D2D',
+    color: TEXT2,
     fontWeight: '500',
   },
   unitChipTextActive: {
-    color: '#FFFFFF',
-  },
-
-  // Buttons
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
-  },
-  cancelBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#D4CFC9',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  cancelBtnText: {
-    fontSize: 15,
-    color: '#8C8C8C',
-    fontWeight: '500',
-  },
-  confirmBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 10,
-    backgroundColor: '#C53D2D',
-    alignItems: 'center',
-  },
-  confirmBtnDisabled: {
-    backgroundColor: '#E8E4E0',
-  },
-  confirmBtnText: {
-    fontSize: 15,
-    color: '#FFFFFF',
+    color: ACCENT,
     fontWeight: '600',
   },
-  confirmBtnTextDisabled: {
-    color: '#BFBFBF',
+
+  // Submit button
+  submitBtn: {
+    marginTop: 24,
+    backgroundColor: ACCENT,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    shadowColor: ACCENT,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  submitBtnDisabled: {
+    backgroundColor: SURFACE3,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  submitBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  submitBtnTextDisabled: {
+    color: TEXT2,
   },
 });
 

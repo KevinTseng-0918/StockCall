@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    叫菜便利貼 App Icon
+    Design: White notepad with dark-red header and chopstick motif
+    Safe zone: 18dp margin on each side (content within 18-90 on 108dp canvas)
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Notepad body (white, rounded corners) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,20 Q20,20 20,28 L20,88 Q20,96 28,96 L80,96 Q88,96 88,88 L88,28 Q88,20 80,20 Z"/>
+
+    <!-- Header stripe (deep red) -->
+    <path
+        android:fillColor="#C03018"
+        android:pathData="M20,28 Q20,20 28,20 L80,20 Q88,20 88,28 L88,44 L20,44 Z"/>
+
+    <!-- Chopstick 1 (white stroke, slight angle inward) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:pathData="M43,22 L50,42"/>
+
+    <!-- Chopstick 2 (white stroke, slight angle inward) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:pathData="M65,22 L58,42"/>
+
+    <!-- List line 1 (full width) -->
+    <path
+        android:fillColor="#E8602A"
+        android:pathData="M28,55 L80,55 L80,59 L28,59 Z"/>
+
+    <!-- List line 2 (full width) -->
+    <path
+        android:fillColor="#E8602A"
+        android:pathData="M28,67 L80,67 L80,71 L28,71 Z"/>
+
+    <!-- List line 3 (short = last item shorter, like a real list) -->
+    <path
+        android:fillColor="#E8602A"
+        android:pathData="M28,79 L60,79 L60,83 L28,83 Z"/>
+
+</vector>

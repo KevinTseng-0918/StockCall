@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npx react-native:*)",
-      "Bash(./gradlew.bat app:installDebug -PreactNativeDevServerPort=8081)"
+      "Bash(./gradlew.bat app:installDebug -PreactNativeDevServerPort=8081)",
+      "Bash(find /c/Users/kevintseng/BentoTap -name StockCall -o -name *StockCall*)",
+      "Read(//c/Users/kevintseng/**)"
     ]
   }
 }
